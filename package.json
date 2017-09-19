@@ -1,0 +1,15 @@
+{
+  "name": "@co.mmons/js-browser-locale",
+  "version": "1.0.0",
+  "author": "co.mmons",
+  "private": false,
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc && uglifyjs --compress --mangle --output dist/blocale.min.js -- dist/blocale.js"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^2.5.2",
+    "uglify-js": "^3.1.1"
+  }
+}
