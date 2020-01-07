@@ -5,13 +5,22 @@ var INTL_LOCALE = function () {
     var browserLocale = window.navigator["languages"] ? window.navigator["languages"][0] : undefined;
     browserLocale = browserLocale || window.navigator.language || window.navigator["browserLanguage"] || window.navigator["userLanguage"];
     browserLocale = browserLocale ? browserLocale.toLowerCase() : undefined;
-    var urlLocale = INTL_LOCALE_URL_PATH ? window.location.pathname.split("/")[1] : undefined;
-    if (urlLocale && urlLocale.match(/^\W+$/g)) {
-        urlLocale = undefined;
+    var urlLocale;
+    var urlPath = INTL_LOCALE_URL_PATH ? window.location.pathname.substring(1).split("/") : undefined;
+    if (urlPath && urlPath.length >= (INTL_LOCALE_URL_PATH === true ? 1 : 2)) {
+        if (INTL_LOCALE_URL_PATH === true) {
+            urlLocale = urlPath[0].match(/^\W+$/g) ? undefined : urlPath[0];
+        }
+        else if (urlPath[0] == INTL_LOCALE_URL_PATH) {
+            urlLocale = urlPath[1];
+        }
     }
     if (!urlLocale) {
         var queryLocaleMatch = new RegExp('[?&]' + INTL_LOCALE_URL_PARAM + '=([^&]*)').exec(window.location.search);
         urlLocale = queryLocaleMatch && decodeURIComponent(queryLocaleMatch[1].replace(/\+/g, ' ')).toLowerCase();
+    }
+    if (!urlLocale && INTL_LOCALE_STORAGE_KEY) {
+        urlLocale = (window.localStorage && window.localStorage.getItem(INTL_LOCALE_STORAGE_KEY)) || undefined;
     }
     var bestLocale;
     if (browserLocale || urlLocale) {
@@ -20,10 +29,10 @@ var INTL_LOCALE = function () {
         for (var _i = 0, _a = (typeof supported == "string" ? supported.split(",") : supported); _i < _a.length; _i++) {
             var l = _a[_i];
             var s = l.toLowerCase();
-            if (s == urlLocale) {
+            if (s === urlLocale) {
                 return l;
             }
-            else if (s == browserLocale) {
+            else if (s === browserLocale) {
                 bestLocale = l;
                 bestLocaleRanking = 20;
             }

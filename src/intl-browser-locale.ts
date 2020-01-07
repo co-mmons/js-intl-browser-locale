@@ -1,9 +1,10 @@
 declare var INTL_DEFAULT_LOCALE: string;
 declare var INTL_SUPPORTED_LOCALE: string[] | string;
-declare var INTL_LOCALE_URL_PATH: boolean;
+declare var INTL_LOCALE_URL_PATH: boolean | string;
 declare var INTL_LOCALE_URL_PARAM: string;
+declare var INTL_LOCALE_STORAGE_KEY: string;
 
-var INTL_LOCALE = function (): string {
+let INTL_LOCALE = function (): string {
 
     if (typeof window === "undefined" || typeof window.navigator === "undefined") {
         return INTL_DEFAULT_LOCALE;
@@ -13,14 +14,23 @@ var INTL_LOCALE = function (): string {
     browserLocale = browserLocale || window.navigator.language || window.navigator["browserLanguage"] || window.navigator["userLanguage"];
     browserLocale = browserLocale ? browserLocale.toLowerCase() : undefined;
 
-    let urlLocale = INTL_LOCALE_URL_PATH ? window.location.pathname.split("/")[1] : undefined;
-    if (urlLocale && urlLocale.match(/^\W+$/g)) {
-        urlLocale = undefined;
+    let urlLocale: string;
+    let urlPath = INTL_LOCALE_URL_PATH ? window.location.pathname.substring(1).split("/") : undefined;
+    if (urlPath && urlPath.length >= (INTL_LOCALE_URL_PATH === true ? 1 : 2)) {
+        if (INTL_LOCALE_URL_PATH === true) {
+            urlLocale = urlPath[0].match(/^\W+$/g) ? undefined : urlPath[0];
+        } else if (urlPath[0] == INTL_LOCALE_URL_PATH) {
+            urlLocale = urlPath[1];
+        }
     }
 
     if (!urlLocale) {
         let queryLocaleMatch = new RegExp('[?&]' + INTL_LOCALE_URL_PARAM + '=([^&]*)').exec(window.location.search);
         urlLocale = queryLocaleMatch && decodeURIComponent(queryLocaleMatch[1].replace(/\+/g, ' ')).toLowerCase();
+    }
+
+    if (!urlLocale && INTL_LOCALE_STORAGE_KEY) {
+        urlLocale = (window.localStorage && window.localStorage.getItem(INTL_LOCALE_STORAGE_KEY)) || undefined;
     }
 
     let bestLocale: string;
@@ -30,13 +40,13 @@ var INTL_LOCALE = function (): string {
         let bestLocaleRanking: number;
         let supported = INTL_SUPPORTED_LOCALE;
 
-        for (let l of (typeof supported == "string" ? supported.split(",") : supported)) {
-            let s = l.toLowerCase();
+        for (const l of (typeof supported == "string" ? supported.split(",") : supported)) {
+            const s = l.toLowerCase();
 
-            if (s == urlLocale) {
+            if (s === urlLocale) {
                 return l;
 
-            } else if (s == browserLocale) {
+            } else if (s === browserLocale) {
                 bestLocale = l;
                 bestLocaleRanking = 20;
 
