@@ -7,9 +7,11 @@
   "scripts": {
     "build": "tsc && uglifyjs --compress --mangle --output dist/intl-browser-locale.min.js -- dist/intl-browser-locale.js"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@co.mmons/js-intl": "github:co-mmons/js-intl"
+  },
   "devDependencies": {
-    "typescript": "^2.5.2",
+    "typescript": "^4.1.3",
     "uglify-js": "^3.1.1"
   }
 }

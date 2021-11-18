@@ -1,10 +1,6 @@
-declare var INTL_DEFAULT_LOCALE: string;
-declare var INTL_SUPPORTED_LOCALE: string[] | string;
-declare var INTL_LOCALE_URL_PATH: boolean | string;
-declare var INTL_LOCALE_URL_PARAM: string;
-declare var INTL_LOCALE_STORAGE_KEY: string;
+import "@co.mmons/js-intl/globals";
 
-let INTL_LOCALE = function (): string {
+export function intlBestLocale() {
 
     if (typeof window === "undefined" || typeof window.navigator === "undefined") {
         return INTL_DEFAULT_LOCALE;
@@ -66,4 +62,4 @@ let INTL_LOCALE = function (): string {
     }
 
     return bestLocale;
-}();
+}
